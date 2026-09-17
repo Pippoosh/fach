@@ -1,0 +1,42 @@
+; Example fach.bnml. `fach init` writes a starter file; this example is fuller.
+; Copy into a project root as fach.bnml, or start from `fach init`, then:
+;   fach list
+;   fach dep
+;   fach get name
+;   fach get out.dir
+;   fach run check
+
+0 project
+1 name: hello
+1 version: 0.1.0
+1 out
+2 dir: build
+
+0 deps
+1 odin: The Odin compiler
+1 sh: POSIX shell
+
+0 entrypoints
+
+1 build: print a fake build
+2 cmds
+3 echo building {{name}} {{version}} into {{out.dir}}
+2 regardless
+3 echo done
+
+1 test: print a fake test
+2 cmds
+3 echo tests
+3 echo note: colons are kept
+
+1 check: setup, then test, then build
+2 cmds
+3 [[setup]]
+3 [test]
+3 [build]
+
+0 private
+1 setup
+2 cmds
+3 echo private setup for {{name}}
+3 echo a literal bracket: [[name]
