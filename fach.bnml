@@ -8,4 +8,4 @@
 0 entrypoints
 1 build: build fach
 2 cmds
-3 odin build . -out:{{name}}
+3 odin build cmd/fach -out:{{name}}

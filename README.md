@@ -17,7 +17,7 @@ Requires [Odin](https://odin-lang.org/). Config is [BNML](https://github.com/Pip
 From the repository root:
 
 ```sh
-odin build . -out:fach
+odin build cmd/fach -out:fach
 ```
 
 Put the binary on your `PATH`, or run it as `./fach`.
@@ -78,10 +78,46 @@ Inside commands:
 
 Public and private inlines share a cycle check. Missing values, missing entrypoints, and missing privates are errors.
 
+## Library
+
+`package fach` is the library; the CLI is a wrapper around it. Imports are relative to the importing file:
+
+```odin
+import fach "path/to/fach"
+```
+
+Default config path is `fach.bnml` (`CONFIG_FILE`). Pass another path to `init` or `load` if you want. `Error.kind == .None` is success; `Error.text` is an allocated message.
+
+```odin
+file, err := fach.load()
+if err.kind != .None {
+	fmt.eprintln(err.text)
+	return
+}
+defer fach.destroy(&file)
+
+code, err := fach.run(file, "build")
+```
+
+| Procedure | Returns | What it does |
+| --- | --- | --- |
+| `init` | `Error` | Write a starter file (`STARTER`); error if it already exists |
+| `load` | `File`, `Error` | Read and parse a `fach.bnml` |
+| `destroy` | — | Free a loaded `File` |
+| `get` | `string`, `Error` | Leaf `project` value (needs `project`) |
+| `list_deps` | `[]Dep`, `Error` | `deps` names and hints (needs `deps`) |
+| `list_entrypoints` | `[]Entrypoint`, `Error` | Public names and descriptions (needs `entrypoints`) |
+| `run` | `int`, `Error` | Run a public entrypoint (needs `project` and `entrypoints`) |
+
+`run`’s `int` is the shell exit code. A non-`.None` `Error` is a fach failure (missing schema, unknown name, bad entrypoint, …), not that exit code.
+
+Strings from `get`, `Dep`, and `Entrypoint` are borrowed from the `File`; keep it alive. `delete` the slices from `list_deps` and `list_entrypoints`.
+
 ## Layout
 
 ```
-main.odin     CLI
-examples/     sample fach.bnml
-vendor/bnml/  BNML parser (https://github.com/Pippoosh/bnml)
+fach.odin           library (`package fach`)
+cmd/fach/main.odin  CLI
+examples/           sample fach.bnml
+vendor/bnml/        BNML parser (https://github.com/Pippoosh/bnml)
 ```
