@@ -47,7 +47,7 @@ fach reads `fach.bnml` from the current directory. Blank lines and whole-line `;
 0 entrypoints
 1 build: compile the binary
 2 cmds
-3 odin build . -out:{{name}}
+3 odin build . -out\:{{name}}
 2 regardless
 3 echo done
 
@@ -65,7 +65,7 @@ Each public or private entrypoint has `cmds` (required) and optional `regardless
 
 The optional value on the entrypoint line (`1 build: compile the binary`) is a description for `fach list`. The same pattern on a dep is a hint for `fach dep`.
 
-Command text is the BNML key. If you need a colon in the command, write it as `key: value` — BNML splits on the first unescaped colon, and fach joins the key and value back with `: `.
+Command text is the BNML key. If you need a colon in the command, write it as `key: value` — BNML splits on the first unescaped colon, and fach joins the key and value back with `: `. Write `\:` when the colon must not have a space, as in `-out\:{{name}}`. An unescaped colon keeps the space, so `note: hello` stays `note: hello`.
 
 Inside commands:
 
